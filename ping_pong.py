@@ -49,8 +49,8 @@ clock = time.Clock()
 FPS = 60
 
 #создания мяча и ракетки    
-racket1 = Player('racket.png', 30, 200, 4, 50, 150) # при созданни спрайта добавляется еще два параметра
-racket2 = Player('racket.png', 520, 200, 4, 50, 150)
+racket1 = Player('racket.png', 0, 200, 4, 50, 150) # при созданни спрайта добавляется еще два параметра
+racket2 = Player('racket.png', 549, 200, 4, 50, 150)
 ball = GameSprite('tenis_ball.png', 200, 200, 4, 50, 50)
 
 font.init()
@@ -60,6 +60,11 @@ lose2 = font.render('PLAYER 2 LOSE!', True, (180, 0, 0))
 
 speed_x = 3
 speed_y = 3
+
+speed_increment = 0.05  # насколько увеличиваем скорость за шаг
+max_speed = 10         # максимальная скорость мяча
+
+frame_count = 0
 
 while game:
     for e in event.get():
@@ -72,10 +77,18 @@ while game:
         racket2.update_r()
         ball.rect.x += speed_x
         ball.rect.y += speed_y
+        
+        frame_count += 1
+        if frame_count % 60 == 0:
+            # Увеличиваем скорость по модулю, сохраняя знак
+            if abs(speed_x) < max_speed:
+                speed_x += speed_increment if speed_x > 0 else -speed_increment
+            if abs(speed_y) < max_speed:
+                speed_y += speed_increment if speed_y > 0 else -speed_increment
+
 
         if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball):
             speed_x *= -1
-            speed_y *= 1
         
         # если мяч достигает границ экрана меняем направление его движения
         if ball.rect.y > win_height-50 or ball.rect.y < 0:
